@@ -25,7 +25,6 @@ class OneKomma5GradOptionsFlowHandler(config_entries.OptionsFlow):
         # Create an API client to fetch available systems.
         access_token = self._config_entry_data.get("access_token")
         refresh_token = self._config_entry_data.get("refresh_token")
-        session = async_get_clientsession(self.hass)
         api_client = OneKomma5GradApi(self.hass, access_token)
 
         # First, fetch available systems from the API.
@@ -53,19 +52,19 @@ class OneKomma5GradOptionsFlowHandler(config_entries.OptionsFlow):
 
         # Use the current system id from options or config data as the default.
         current_system_id = self._config_entry_options.get(
-            "system_id", self._config_entry_data.get("system_id", "")
+            "System ID", self._config_entry_data.get("System ID", "")
         )
 
         schema = vol.Schema(
             {
-                vol.Required("system_id", default=current_system_id): system_schema,
-                vol.Optional("refresh_tokens", default=False): bool,
+                vol.Required("System ID", default=current_system_id): system_schema,
+                vol.Optional("Refresh Token", default=False): bool,
             }
         )
 
         if user_input is not None:
             # If refresh is requested, refresh the tokens.
-            if user_input.get("refresh_tokens"):
+            if user_input.get("Refresh Token"):
                 try:
                     new_token_data = await api_client.async_token_refresh(refresh_token)
                     _LOGGER.debug("Token refreshed successfully")

@@ -1,22 +1,32 @@
 {
   "domain": "1komma5grad",
   "name": "1Komma5Grad",
-  "version": "0.0.1",
-  "codeowners": ["@domenik1023"],
+  "version": "0.1.0",
+  "codeowners": [
+    "@domenik1023"
+  ],
   "config_flow": true,
-  "dependencies": ["application_credentials"],
-  "documentation": "https://www.home-assistant.io/integrations/1komma5grad",
+  "dependencies": [
+    "application_credentials"
+  ],
+  "documentation": "https://github.com/domenik1023/1komma5grad",
   "homekit": {},
   "iot_class": "cloud_polling",
-  "quality_scale": "bronze",
   "requirements": [],
   "ssdp": [],
   "zeroconf": [],
   "oauth2": [
     {
       "name": "Default",
-      "scopes": ["openid", "profile", "email", "offline_access"],
-      "domains": ["auth.1komma5grad.com"]
+      "scopes": [
+        "openid",
+        "profile",
+        "email",
+        "offline_access"
+      ],
+      "domains": [
+        "auth.1komma5grad.com"
+      ]
     }
   ]
 }

@@ -7,7 +7,7 @@ Der komplette Login für 1Komma5Grad is Pfusch, da die OAuth Schnittstelle nicht
 Für die Installation der Integration muss das Repository nach custom_components gecloned werden.
 ```
 mkdir custom_components && cd custom_components
-git clone https://github.com/domenik1023/1komma5
+git clone https://github.com/domenik1023/1komma5grad
 
 reboot
 ```

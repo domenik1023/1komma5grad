@@ -1,6 +1,7 @@
 """The 1Komma5Grad integration."""
 
 from __future__ import annotations
+
 from datetime import timedelta
 import logging
 
@@ -49,6 +50,20 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     # --- Create the API client ---
     api_client = api.OneKomma5GradApi(hass, access_token)
 
+    # Check if the token is still valid.
+    try:
+        await api_client.async_get_live_overview(system_id)
+    except Exception as err:
+        _LOGGER.info("Access token invalid or expired, refreshing tokens: %s", err)
+        new_token_data = await api_client.async_token_refresh(refresh_token)
+        # Update the config entry with the new token data.
+        hass.config_entries.async_update_entry(
+            config_entry,
+            data={**config_entry.data, **new_token_data},
+        )
+        # Update the API client’s access token.
+        api_client.access_token = new_token_data.get("access_token")
+
     # --- Create DataUpdateCoordinator for Live Overview ---
     coordinator = DataUpdateCoordinator(
         hass,
@@ -65,7 +80,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         _LOGGER,
         name="1Komma5Grad Market Price",
         update_method=lambda: api_client.async_get_market_price(system_id),
-        update_interval=timedelta(seconds=30),  # seconds; adjust as needed
+        update_interval=timedelta(seconds=30),  # adjust as needed
     )
     await market_price_coordinator.async_config_entry_first_refresh()
 

@@ -114,7 +114,7 @@ class OAuth2FlowHandler(
             return self.async_show_form(
                 data_schema=vol.Schema(
                     {
-                        vol.Required("Authorization_Code"): str,
+                        vol.Required("Authorization Code"): str,
                     }
                 ),
                 description_placeholders="After you authorize, copy the code from the URL and paste it below.",
@@ -122,7 +122,7 @@ class OAuth2FlowHandler(
         # Dismiss the notification if the user has provided the code
         persistent_notification.async_dismiss(self.hass, "1komma5grad_oauth")
         self.logger.debug(user_input)
-        code = user_input["Authorization_Code"]
+        code = user_input["Authorization Code"]
         token_data = await self._exchange_code_for_token(code)
         token_data["auth_implementation"] = DOMAIN
 
@@ -163,25 +163,25 @@ class OAuth2FlowHandler(
             try:
                 response = await self.api.async_get_systems()  # See API client below.
             except Exception:
-                return self.async_abort(reason="cannot_fetch_systems")
+                return self.async_abort(reason="Cannot Fetch Systems!")
 
             # Build a dict of system_id: system_name for the dropdown.
             systems = response.get("data", [])
             if not systems:
-                return self.async_abort(reason="no_systems_found")
+                return self.async_abort(reason="No Systems Found!")
             self.system_options = {
                 system["id"]: system["systemName"] for system in systems
             }
 
             schema = vol.Schema(
                 {
-                    vol.Required("System_ID"): vol.In(self.system_options),
+                    vol.Required("System ID"): vol.In(self.system_options),
                 }
             )
             return self.async_show_form(step_id="system", data_schema=schema)
 
         # User has selected a system.
-        selected_system = user_input["System_ID"]
+        selected_system = user_input["System ID"]
         # You can add the system id to your token data or separate config data.
         token_data = {
             "access_token": self.api.access_token,
@@ -190,6 +190,7 @@ class OAuth2FlowHandler(
             "auth_implementation": DOMAIN,
         }
         return self.async_create_entry(
-            title=f"1Komma5Grad ({self.system_options[selected_system]})",
+            title="1Komma5Grad Account",
+            description=f"Connected as {self.system_options[selected_system]}",
             data=token_data,
         )

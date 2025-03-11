@@ -6,51 +6,61 @@ DOMAIN = "1komma5grad"
 OAUTH2_AUTHORIZE = "https://auth.1komma5grad.com/authorize"
 OAUTH2_TOKEN = "https://auth.1komma5grad.com/oauth/token"
 
-API_BASE_URL = "https://heartbeat.1komma5grad.com/"
+API_BASE_URL = "https://heartbeat.1komma5grad.com"
 
 SENSOR_CONFIG = {
-    "consumption": {
-        "name": "House Consumption",
-        "unit": "W",  # Customize unit here
-        "device_class": "power",
-        "state_class": "measurement",
-    },
-    "gridFeedIn": {
-        "name": "Grid Feed-In",
+    "solar_production": {
+        "name": "1k5 Solar Production",
         "unit": "W",
         "device_class": "power",
         "state_class": "measurement",
     },
-    "gridConsumption": {
-        "name": "Grid Consumption",
+    "battery_in": {
+        "name": "1k5 Battery In",
         "unit": "W",
         "device_class": "power",
         "state_class": "measurement",
     },
-    "production": {
-        "name": "Solar Production",
+    "battery_out": {
+        "name": "1k5 Battery Out",
         "unit": "W",
         "device_class": "power",
         "state_class": "measurement",
     },
-    # Add additional sensors if needed.
-}
-
-INTEGRATION_SENSORS = {
-    "consumption": {
-        "key": "consumption",
-        "name": "Total Consumption Energy",
-        "unit": "kWh",
+    "battery_charge": {
+        "name": "1k5 Battery Charge",
+        "unit": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
     },
-    "production": {
-        "key": "production",
-        "name": "Total Production Energy",
+    "battery_energy": {
+        "name": "1k5 Battery Energy",
         "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "measurement",
+        "battery_capacity": 15.52,  # Example capacity in kWh.
     },
-    "gridFeedIn": {
-        "key": "gridFeedIn",
-        "name": "Total Grid Feed-In Energy",
-        "unit": "kWh",
+    "grid_feed_in": {
+        "name": "1k5 Grid Feed-In",
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
     },
-    # Add other integration sensors as needed.
+    "grid_consumption": {
+        "name": "1k5 Grid Consumption",
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
+    },
+    "house_consumption": {
+        "name": "1k5 House Consumption",
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
+    },
+    "market_price": {
+        "name": "1k5 Market Price",
+        "unit": "EUR/kWh",  # Value is converted from ct/kWh in the sensor.
+        "state_class": "measurement",
+    },
 }
