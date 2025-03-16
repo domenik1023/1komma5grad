@@ -118,6 +118,7 @@ class OneKomma5GradApi:
             _LOGGER.debug("Get System - Response JSON: %s", await response.json())
             return await response.json()
 
+    # TODO I don't know if this is the correct value, can only check later.
     async def async_get_market_price(self, system_id: str) -> dict:
         """Fetch market prices for the system."""
         headers = {"Authorization": f"Bearer {self.access_token}"}

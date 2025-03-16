@@ -8,6 +8,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from . import api
@@ -84,23 +85,22 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     )
     await market_price_coordinator.async_config_entry_first_refresh()
 
-    # --- Create DataUpdateCoordinator for Token Refresh ---
-    token_refresh_coordinator = DataUpdateCoordinator(
-        hass,
-        _LOGGER,
-        name="1Komma5Grad Token Refresh",
-        update_method=lambda: async_refresh_tokens(),
-        update_interval=timedelta(seconds=43200),  # seconds; adjust as needed
-    )
-    await token_refresh_coordinator.async_config_entry_first_refresh()
+    # --- Create Token Refresh via Manually Scheduled Task ---
+    async def token_refresh_task(now):
+        try:
+            await async_refresh_tokens()  # your async refresh function
+        except Exception as err:
+            _LOGGER.error("Error in scheduled token refresh: %s", err)
+
+    async_track_time_interval(hass, token_refresh_task, timedelta(seconds=43200))
 
     # --- Store integration data ---
     hass.data.setdefault(DOMAIN, {})[config_entry.entry_id] = {
         "coordinator": coordinator,
         "market_price_coordinator": market_price_coordinator,
-        "token_refresh_coordinator": token_refresh_coordinator,
+        "token_refresh_task": token_refresh_task,
         "api": api_client,
-        # You can add additional coordinators here later (e.g. market price coordinator)
+        # You can add additional coordinators here later
     }
 
     # --- Forward setup to sensor platform ---
