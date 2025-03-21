@@ -1,104 +1,151 @@
-#
+# 1Komma5Grad Home Assistant Integration (Unofficial)
 
-# Pfusch
-Der komplette Login für 1Komma5Grad is Pfusch, da die OAuth Schnittstelle nicht Dokumentiert ist und die Redirect_url nicht änderbar ist muss der Login in einem neuen Tab mit Browser Konsole und Custom Registry Key abgefangen werden.
+**Disclaimer** :
 
-## 1. Installation
-Für die Installation der Integration muss das Repository nach custom_components gecloned werden.
+This integration provides access to 1Komma5Grad systems despite the lack of official OAuth documentation. The OAuth flow is somewhat hacky due to the inability to configure the redirect URI, and it requires a custom URL handler to intercept the login callback.
+
+---
+
+## 🚀 Features
+
+- Integration with Home Assistant
+
+- Support for Home Assistant's Energy dashboard
+
+- Sensors for solar production, consumption, grid interaction and battery usage
+
+---
+
+## 📦 Installation
+
+Prerequisite: [HACS](https://hacs.xyz/) (Home Assistant Community Store)
+
+This integration requires HACS to be installed and configured in your Home Assistant instance.
+
+### Installation via HACS
+
+2. Open Home Assistant and go to **HACS → Integrations** .
+
+3. Click on the **three dots (⋮)** in the top right and select **Custom Repositories** .
+
+4. Add this repository:
+
+```arduino
+https://github.com/domenik1023/1komma5grad
 ```
-mkdir custom_components && cd custom_components
-git clone https://github.com/domenik1023/1komma5grad
 
-reboot
+- **Category** : Integration
+
+8. After adding, search for **1Komma5Grad** in the HACS integration list and install it.
+
+9. Restart Home Assistant once the installation is complete.
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Home Assistant Configuration
+
+Once the Integration is installed.
+
+1. Navigate to **Settings → Devices & Services → Add Integration**.
+
+2. Search for and add **1Komma5Grad**.
+
+#### OAuth Login
+
+- A popup will request an **Authorization Code**.
+
+- Open a **new tab** with Home Assistant running and trigger the login flow.
+
+- In the login window for 1Komma5Grad:
+
+  - Open the browser developer console (usually `F12` on Chromium).
+
+In the browser console, you'll see a log like:
+
+```bash
+Failed to launch 'io.onecommafive.my.production.app://auth.1komma5grad.com/android/io.onecommafive.my.production.app/callback?code={HERE_WILL_BE_YOUR_CODE&state=01JPWQX64RJ8DC869S0E6C6VK2' because the scheme does not have a registered handler.
 ```
 
-## 2. Setup
-### Registry
-Um die Integration Nutzen zu können muss in der Windows Registry der ein custom handler angelegt werden.
+Copy the `code` parameter from this URL and paste it into Home Assistant.
 
-```reg
-Windows Registry Editor Version 5.00
+---
 
-[HKEY_CLASSES_ROOT\io.onecommafive.my.production.app]
-@="URL:Heartbeat OAuth"
-"URL Protocol"=""
+## 🧩 Configuration
 
-[HKEY_CLASSES_ROOT\io.onecommafive.my.production.app\shell]
+### System Selection
 
-[HKEY_CLASSES_ROOT\io.onecommafive.my.production.app\shell\open]
+If everything is set up correctly, you should now see at least two available system IDs.
 
-[HKEY_CLASSES_ROOT\io.onecommafive.my.production.app\shell\open\command]
-@="\"C:\\Path\\to\\python.exe\" \"C:\\Path\\to\\your_script.py\" \"%1\""
-```
+Choose the **System ID** that corresponds to your setup.
 
-### Home Assistant
-Nach der Installation und der Einstellung in der Windows Registry kann nun die Konfiguration in Home Assistant erfolgen.
-Dafür kann unter Settings -> Devices & Services -> Add Integration -> 1Komma5Grad die integration hinzugefügt werden.
+Once selected, you’ll be prompted to add the available sensors.
 
-Als erstes wird ein Authorization Code abgefragt. Dieser kann durch die URL in Notifications generiert werden.
-Am besten dafür einfach ein neues Fenster mit Home Assistant öffen. (Ich weiß das das blöd ist lol)
+### Optional Configuration
 
-Nach dem öffnen der Login Seite für 1Komma5Grad sollte im Browser die Konsole (Chromium: F12) geöffnet werden. Nach dem Login sollte das "Open URL" Popup erscheinen dort auf Open URL Klicken. In der Konsole sollte jetzt folgendes stehen: `Launched external handler for io.onecommafive.my.production.app://auth.1komma5grad.com/android/io.onecommafive.my.production.app/callback?code=HIER_DER_CODE&state=01JN6MXDHVK1DC5V0033QNY1WQ`
+You can optionally add [integration sensors]() for the Home Assistant Energy dashboard by updating your `configuration.yaml`:
 
-Hier muss der Code Kopiert und in Home Assistant eingefügt werden.
-
-Nach dem Einfügen des Codes werden Alle Systeme Geladen, hier kann sich Zwischen dem Demo System und dem eigenen Endschieden werden.
-
-Unter Configuration lässt sich das System ändern und ein Force Refresh des Tokens erziehlen.
-
-### 3. Configuration
-Es lassen sich noch IntegrationSensors für die Energy Map von Home Assistant erstellen.
-
-dafür muss in der configuration.yml folgendes hinzugefügt werden.
-
-```yml
+```yaml
 sensor:
-    - platform: integration
-    source: sensor.solar_production
+  - platform: integration
+    source: sensor.1k5_solar_production
     name: Total Solar Production
     unique_id: 1k5_total_solar_production
     unit_prefix: k
-    round: 4
+    round: 1
 
-    - platform: integration
-    source: sensor.consumption
+  - platform: integration
+    source: sensor.1k5_house_consumption
     name: Total House Consumption
     unique_id: 1k5_total_house_consumption
     unit_prefix: k
     round: 4
 
-    - platform: integration
-    source: sensor.grid_consumption
+  - platform: integration
+    source: sensor.1k5_grid_consumption
     name: Total Grid Consumption
     unique_id: 1k5_total_grid_consumption
     unit_prefix: k
     round: 4
 
-    - platform: integration
-    source: sensor.grid_feed_in
+  - platform: integration
+    source: sensor.1k5_grid_feed_in
     name: Total Grid Feed In
     unique_id: 1k5_total_grid_feedin
     unit_prefix: k
     round: 4
 
-    - platform: integration
-    source: sensor.battery_power
+  - platform: integration
+    source: sensor.1k5_battery_energy
     name: Total Battery
     unique_id: 1k5_total_battery
     unit_prefix: k
     round: 4
 
-    - platform: integration
-    source: sensor.battery_power_in
+  - platform: integration
+    source: sensor.1k5_battery_in
     name: Total Battery In
     unique_id: 1k5_total_battery_in
     unit_prefix: k
     round: 4
 
-    - platform: integration
-    source: sensor.battery_power_out
+  - platform: integration
+    source: sensor.1k5_battery_out
     name: Total Battery Out
     unique_id: 1k5_total_battery_out
     unit_prefix: k
     round: 4
 ```
+
+---
+
+## ⚠️ Notes
+
+- The login process is a workaround and might break if the OAuth flow changes.
+- This project is not affiliated with or endorsed by 1Komma5Grad.
+- This project was mostly written with the help of ChatGPT and might not be perfect.
+- I will not provide any Support for this integration.
+- If you can Improve this integration, please open a PR or issue.
+
+---
